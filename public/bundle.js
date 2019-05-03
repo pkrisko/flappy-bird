@@ -86,14 +86,27 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/js/DVDLogo.js":
+/*!***************************!*\
+  !*** ./src/js/DVDLogo.js ***!
+  \***************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\n//Create image\nvar img = document.createElement('IMG'),\n    imgHeight = 60,\n    imgWidth = 80;\nimg.setAttribute('src', 'https://upload.wikimedia.org/wikipedia/commons/e/e7/DVD-Video_Logo.svg');\n\nvar DVDLogo =\n/*#__PURE__*/\nfunction () {\n  /**\n   * Constructor with default values of 50 for x and y.\n   * @param {number} x\n   * @param {mumber} y\n   */\n  function DVDLogo() {\n    var x = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 50;\n    var y = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 50;\n\n    _classCallCheck(this, DVDLogo);\n\n    this.x = x;\n    this.y = y;\n    this.xVel = 2;\n    this.yVel = 2;\n  }\n  /**\n   * Check to see if hitting wall first, then update current x and y\n   */\n\n\n  _createClass(DVDLogo, [{\n    key: \"tick\",\n    value: function tick() {\n      if (this.x >= window.innerWidth - imgWidth || this.x <= 0) this.xVel *= -1;\n      if (this.y >= window.innerHeight - imgHeight || this.y <= 0) this.yVel *= -1;\n      this.x += this.xVel;\n      this.y += this.yVel;\n    }\n    /**\n     * Draw a circle at the current position\n     */\n\n  }, {\n    key: \"render\",\n    value: function render() {\n      context.beginPath();\n      context.drawImage(img, this.x, this.y, imgWidth, imgHeight);\n      context.stroke();\n    }\n  }]);\n\n  return DVDLogo;\n}(); // Lets this be used by other files.\n\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (DVDLogo);\n\n//# sourceURL=webpack:///./src/js/DVDLogo.js?");
+
+/***/ }),
+
 /***/ "./src/js/index.js":
 /*!*************************!*\
   !*** ./src/js/index.js ***!
   \*************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-eval("var canvas = document.getElementById('canvas');\nvar context = canvas.getContext(\"2d\"); // resize the canvas to fill browser window dynamically\n\nwindow.addEventListener('resize', resizeCanvas, false);\n\nfunction resizeCanvas() {\n  canvas.width = window.innerWidth - 8;\n  canvas.height = window.innerHeight - 8;\n  drawStuff();\n}\n\nresizeCanvas();\n\nfunction drawStuff() {\n  context.beginPath();\n  context.arc(95, 50, 40, 0, 2 * Math.PI);\n  context.stroke();\n}\n\n//# sourceURL=webpack:///./src/js/index.js?");
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _DVDLogo__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DVDLogo */ \"./src/js/DVDLogo.js\");\n // Global variables\n\nwindow.canvas = document.getElementById('canvas');\nwindow.context = canvas.getContext(\"2d\"); // File scoped variables\n\nvar dvdLogo;\nvar lastRender = 0;\n\nfunction setup() {\n  dvdLogo = new _DVDLogo__WEBPACK_IMPORTED_MODULE_0__[\"default\"](Math.floor(window.innerWidth / 2, window.innerHeight / 2));\n  window.requestAnimationFrame(loop);\n}\n\nsetup();\n\nfunction loop(timestamp) {\n  var progress = timestamp - lastRender;\n  tick(progress);\n  render();\n  lastRender = timestamp;\n  window.requestAnimationFrame(loop);\n}\n/**\n * Update the current state of the game\n * @param {*} progress\n */\n\n\nfunction tick(progress) {\n  dvdLogo.tick();\n}\n/**\n * Draw the current state of the world.\n */\n\n\nfunction render() {\n  context.clearRect(0, 0, window.innerWidth, window.innerHeight);\n  dvdLogo.render();\n} // resize the canvas to fill browser window dynamically\n\n\nwindow.addEventListener('resize', resizeCanvas, false);\n\nfunction resizeCanvas() {\n  canvas.width = window.innerWidth;\n  canvas.height = window.innerHeight;\n}\n\nresizeCanvas();\n\n//# sourceURL=webpack:///./src/js/index.js?");
 
 /***/ })
 

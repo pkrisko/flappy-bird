@@ -3,5 +3,5 @@ body{
 }
 #canvas{
     box-sizing: border-box;
-    border: 4px solid cornflowerblue;
+    /* border: 4px solid cornflowerblue; */
 }
