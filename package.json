@@ -1,0 +1,30 @@
+{
+  "name": "flappy-bird",
+  "version": "1.0.0",
+  "description": "flappy bird clone",
+  "main": "build/index.html",
+  "scripts": {
+    "start": "http-server -p 9000",
+    "build": "webpack --config webpack.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pkrisko/flappy-bird.git"
+  },
+  "author": "pkrisko",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pkrisko/flappy-bird/issues"
+  },
+  "homepage": "https://github.com/pkrisko/flappy-bird#readme",
+  "devDependencies": {
+    "@babel/core": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
+    "babel": "^6.23.0",
+    "babel-cli": "^6.26.0",
+    "babel-loader": "^8.0.5",
+    "webpack": "^4.30.0",
+    "webpack-cli": "^3.3.1"
+  },
+  "dependencies": {}
+}
