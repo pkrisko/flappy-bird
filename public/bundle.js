@@ -93,7 +93,7 @@
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-eval("var canvas = document.getElementById('canvas');\nvar ctx = canvas.getContext(\"2d\");\nctx.beginPath();\nctx.arc(95, 50, 40, 0, 2 * Math.PI);\nctx.stroke();\n\n//# sourceURL=webpack:///./src/js/index.js?");
+eval("var canvas = document.getElementById('canvas');\nvar context = canvas.getContext(\"2d\"); // resize the canvas to fill browser window dynamically\n\nwindow.addEventListener('resize', resizeCanvas, false);\n\nfunction resizeCanvas() {\n  canvas.width = window.innerWidth - 8;\n  canvas.height = window.innerHeight - 8;\n  drawStuff();\n}\n\nresizeCanvas();\n\nfunction drawStuff() {\n  context.beginPath();\n  context.arc(95, 50, 40, 0, 2 * Math.PI);\n  context.stroke();\n}\n\n//# sourceURL=webpack:///./src/js/index.js?");
 
 /***/ })
 
