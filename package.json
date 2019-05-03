@@ -5,7 +5,7 @@
   "main": "build/index.html",
   "scripts": {
     "start": "http-server -p 9000",
-    "build": "webpack --config webpack.config.js"
+    "build": "webpack --config webpack.config.js --watch"
   },
   "repository": {
     "type": "git",
