@@ -40,8 +40,9 @@ function tick(progress) {
 }
 
 // Listen for clicks on desktop. touchstart on mobile
-window.addEventListener('click', () => {
-    bird.flyUp();
+window.addEventListener('keyup', (event) => {
+    if (event.keyCode === 32)
+        bird.flyUp();
 });
 window.addEventListener('touchstart', () => {
     bird.flyUp();
