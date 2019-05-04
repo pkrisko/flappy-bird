@@ -1,7 +1,3 @@
 body{
     margin: 0; /* Override chrome user-agent stylesheet */
 }
-#canvas{
-    box-sizing: border-box;
-    /* border: 4px solid cornflowerblue; */
-}

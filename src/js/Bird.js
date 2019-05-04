@@ -2,11 +2,7 @@
 const img = document.createElement('IMG');
 img.setAttribute('src', 'https://www.pngkey.com/png/full/50-502247_flappy-bird-no-background.png');
 //Other Static variables
-const gravity = 0.8,
-    imgHeight = 30,
-    imgWidth = 40,
-    toRadians = Math.PI / 180,
-    yMax = window.innerHeight - imgHeight;
+const gravity = 0.8;
 
 class Bird {
     /**
@@ -17,15 +13,18 @@ class Bird {
     constructor(x = 50, y = 50) {
         this.x = x;
         this.y = y;
+        this.imgHeight = 30;
+        this.imgWidth = 40;
+        this.yMax = window.innerHeight - this.imgHeight;
         this.lift = -25;
         this.velocity = 0;
     }
 
     flyUp() {
-        if (this.velocity < -20) { // If we're already flying up
-            this.velocity += -5;
-        } else {
-            this.velocity += this.lift;
+        if (this.velocity > 5) { // Falling down fast
+            this.velocity += (-21);
+        } else { // falling down slow or going up
+            this.velocity += (-10);
         }
     }
 
@@ -36,8 +35,8 @@ class Bird {
     tick() {
         this.velocity += gravity;
         this.y += this.velocity;
-        if (this.y >= yMax) // TODO: Add gameover condition
-            this.y = yMax;
+        if (this.y >= this.yMax) // TODO: Add gameover condition
+            this.y = this.yMax;
         if (this.y <= 0)
             this.y = 0;
     }
@@ -46,7 +45,7 @@ class Bird {
      * Draw a flappy ol' bird at the current position
      */
     render() {
-        context.drawImage(img, this.x, this.y, imgWidth, imgHeight);
+        context.drawImage(img, this.x, this.y, this.imgWidth, this.imgHeight);
     }
 }
 
