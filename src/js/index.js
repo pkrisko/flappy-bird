@@ -6,11 +6,13 @@ window.context = canvas.getContext("2d");
 
 // File scoped variables
 const maxFPS = 60; // set to 10 and watch what happens
+const backgroundImg = document.createElement('IMG');
+backgroundImg.setAttribute('src', 'http://blog.itselectlab.com/wp-content/uploads/background.png');
 let bird;
 let lastFrameTimeMs = 0;
 
 function setup() {
-    bird = new Bird(Math.floor(window.innerWidth / 2, window.innerHeight / 2));
+    bird = new Bird(40, 200);
     window.requestAnimationFrame(mainLoop);
 }
 setup();
@@ -52,7 +54,8 @@ window.addEventListener('touchstart', () => {
  * Draw the current state of the world.
  */
 function render() {
-    context.clearRect(0,0,window.innerWidth, window.innerHeight);
+    // context.clearRect(0,0,window.innerWidth, window.innerHeight);
+    context.drawImage(backgroundImg, 0, 0, window.innerWidth, window.innerHeight);
     bird.render();
 }
 
