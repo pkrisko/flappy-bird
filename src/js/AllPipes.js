@@ -6,7 +6,7 @@ const distanceBetweenPipes = 200;
 class AllPipes {
     constructor() {
         this.pipes = new Queue();
-        for (let idx = 1; idx < 6; idx++) {
+        for (let idx = 1.5; idx < 10; idx++) {
             this.pipes.enqueue(new Pipe((idx + .5) * distanceBetweenPipes));
         }
     }
