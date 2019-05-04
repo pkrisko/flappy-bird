@@ -1,7 +1,7 @@
 const spaceBetweenPipe = 180;
 const distanceOffWall = 120;
 const img = document.createElement('IMG');
-img.setAttribute('src', 'http://pixelartmaker.com/art/113fb366a989650.png');
+img.setAttribute('src', 'img/pipe.png');
 
 
 function generateRandomSpawns() {
@@ -26,12 +26,18 @@ class Pipe {
     }
 
     render() {
-        context.beginPath();
-        context.drawImage(img, this.x, 0, this.pipeWidth, this.yTop);
-        // context.fillRect(this.x, 0, pipeWidth, this.yTop);
-        context.drawImage(img, this.x, this.yBottom, this.pipeWidth, window.innerHeight);
+        const centerX = this.x + (this.pipeWidth / 2);
+        context.save();
+        context.translate(this.x, this.yTop);
+        context.scale(-1, 1);
+        context.rotate(Math.PI);
+
+        context.drawImage(img, 0, 0, this.pipeWidth, 500);
+        // context.translate(0,0)
+        context.restore();
+        context.drawImage(img, this.x, this.yBottom, this.pipeWidth, 500);
         // context.fillRect(this.x, this.yBottom, pipeWidth, window.innerHeight);
-        context.fill();
+        // context.fill();
     }
  }
 

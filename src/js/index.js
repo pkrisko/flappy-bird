@@ -68,7 +68,9 @@ function tick() {
 function render() {
     // context.clearRect(0,0,window.innerWidth, window.innerHeight);
     context.drawImage(backgroundImg, 0, 0, window.innerWidth, window.innerHeight);
+    context.save();
     bird.render();
+    context.restore();
     allPipes.render();
 
     context.font = '48px sans-serif';
@@ -97,5 +99,5 @@ resizeCanvas();
 var audio = new Audio('http://files2.earmilk.com/upload/mp3/2012-04/Theophilus%20London%20Ft%20ASAP%20Rocky-Big%20Spender.mp3?_ga=2.259002762.1018058977.1556944267-758562653.1556944266');
 
 setTimeout(() => {
-    audio.play();
+    // audio.play();
 }, 500);
