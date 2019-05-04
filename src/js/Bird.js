@@ -1,6 +1,7 @@
 //Create image
 const img = document.createElement('IMG');
-img.setAttribute('src', 'https://www.pngkey.com/png/full/50-502247_flappy-bird-no-background.png');
+// img.setAttribute('src', 'https://www.pngkey.com/png/full/50-502247_flappy-bird-no-background.png');
+img.setAttribute('src', 'img/flappy.png');
 //Other Static variables
 const gravity = 0.8;
 const toRadians = Math.PI / 360;
