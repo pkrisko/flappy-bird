@@ -1,10 +1,30 @@
+import NeuralNetwork from './NeuralNetwork';
+
 //Create image
 const img = document.createElement('IMG');
 // img.setAttribute('src', 'https://www.pngkey.com/png/full/50-502247_flappy-bird-no-background.png');
-img.setAttribute('src', 'img/flappy.png');
+img.setAttribute('src', 'img/blue-bird.png');
 //Other Static variables
 const gravity = 0.8;
 const toRadians = Math.PI / 360;
+
+// Mutation function to be passed into bird.brain
+function mutate(x) {
+    if (random(1) < 0.1) {
+        let offset = randomGaussian() * 0.5;
+        let newx = x + offset;
+        return newx;
+    } else {
+        return x;
+    }
+}
+
+function constrainRange(value, start1, stop1, start2, stop2) {
+    const range1 = stop1 - start1;
+    const range2 = stop2 - start2;
+    const relativePosition = (value - start1) / range1 ; // 10
+    return (relativePosition * range2) + start2;
+}
 
 class Bird {
     /**
@@ -12,14 +32,56 @@ class Bird {
      * @param {number} x
      * @param {mumber} y
      */
-    constructor(x = 50, y = 50) {
-        this.x = x;
-        this.y = y;
+    constructor(brain) {
+        this.x = 20;
+        this.y = 200;
         this.imgHeight = 30;
         this.imgWidth = 40;
-        this.yMax = window.innerHeight - this.imgHeight;
+        this.yMax = height - this.imgHeight;
         this.lift = -25;
         this.velocity = 0;
+        // Is this a copy of another Bird or a new one?
+        // The Neural Network is the bird's "brain"
+        if (brain instanceof NeuralNetwork) {
+            this.brain = brain.copy();
+            this.brain.mutate(mutate);
+        } else {
+            this.brain = new NeuralNetwork(5, 8, 2);
+        }
+
+        // Score is how many frames it's been alive
+        this.score = 0;
+        // Fitness is normalized version of score
+        this.fitness = 0;
+    }
+
+    copy() {
+        return new Bird(this.brain);
+    }
+
+    // This is the key function now that decides
+    // if it should jump or not jump!
+    think(pipes) {
+        let closest = (this.x < pipes.head.data.x) ? pipes.head.data : pipes.head.next.data;
+        // Now create the inputs to the neural network
+        let inputs = [];
+        // x position of closest pipe
+        inputs[0] = constrainRange(closest.x, this.x, width, 0, 1);
+        // top of closest pipe opening
+        inputs[1] = constrainRange(closest.yTop, 0, height, 0, 1);
+        // bottom of closest pipe opening
+        inputs[2] = constrainRange(closest.yBottom, 0, height, 0, 1);
+        // bird's y position
+        inputs[3] = constrainRange(this.y, 0, height, 0, 1);
+        // bird's y velocity
+        inputs[4] = constrainRange(this.velocity, -5, 5, 0, 1);
+        // Get the outputs from the network
+        let action = this.brain.predict(inputs);
+        // Decide to jump or not!
+        if (action[1] > action[0]) {
+            this.flyUp();
+        }
+
     }
 
     flyUp() {
@@ -35,6 +97,7 @@ class Bird {
      * fly out of bounds.
      */
     tick() {
+        this.score++;
         this.velocity += gravity;
         this.y += this.velocity;
         if (this.y >= this.yMax) // TODO: Add gameover condition
@@ -57,12 +120,8 @@ class Bird {
         context.save();
         context.translate(centerX, centerY);
         context.rotate(this.getRotationAngle());
-        // context.translate(-centerX, -centerY);
         context.drawImage(img, 0, 0, this.imgWidth, this.imgHeight);
         context.restore();
-        // context.rotate(-0.5);
-
-        // context.rotate(-3 * toRadians);
     }
 }
 
