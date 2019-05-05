@@ -34,7 +34,7 @@ class Bird {
      */
     constructor(brain) {
         this.x = 20;
-        this.y = 200;
+        this.y = height / 2;
         this.imgHeight = 30;
         this.imgWidth = 40;
         this.yMax = height - this.imgHeight;
@@ -100,8 +100,8 @@ class Bird {
         this.score++;
         this.velocity += gravity;
         this.y += this.velocity;
-        if (this.y >= this.yMax) // TODO: Add gameover condition
-            this.y = this.yMax;
+        // if (this.y >= this.yMax) // TODO: Add gameover condition
+        //     this.y = this.yMax;
         if (this.y <= 0)
             this.y = 0;
     }

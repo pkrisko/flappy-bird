@@ -16,7 +16,7 @@ let allPipes;
 let score = 0;
 let lastFrameTimeMs = 0;
 // How big is the population
-let totalPopulation = 500;
+let totalPopulation = 1000;
 // All active birds (not yet collided with pipe)
 let activeBirds = [];
 // All birds for any given population
@@ -60,7 +60,8 @@ function touchingPipe(bird, pipe) {
 function isDead(bird) {
     const firstPipe = allPipes.pipes.head.data,
         secondPipe = allPipes.pipes.head.next.data;
-    return (touchingPipe(bird, firstPipe) || touchingPipe(bird, secondPipe));
+    // If bird is fallen through map, or touching a poipe.
+    return (bird.y + bird.imgHeight > height || touchingPipe(bird, firstPipe) || touchingPipe(bird, secondPipe));
 }
 
 /**
@@ -68,8 +69,12 @@ function isDead(bird) {
  * @param {*} progress
  */
 function tick() {
-    // if (Math.abs((bird.x + bird.imgWidth) - (allPipes.pipes.head.data.x + allPipes.pipes.head.data.pipeWidth)) < 2)
-    //     score++;
+    if (activeBirds.length > 0) {
+        const firstBird = activeBirds[0];
+        if (Math.abs((firstBird.x + firstBird.imgWidth) - (allPipes.pipes.head.data.x + allPipes.pipes.head.data.pipeWidth)) < 2)
+            score++;
+    }
+    // score++;
     // bird.tick();
     for (let i = activeBirds.length - 1; i >= 0; i--) {
         let bird = activeBirds[i];
@@ -89,11 +94,8 @@ function tick() {
  */
 function render() {
     context.drawImage(backgroundImg, 0, 0, width, height);
-    // bird.render();
     activeBirds.forEach(bird => bird.render());
-
     allPipes.render();
-
     context.font = '48px sans-serif';
     context.fillStyle = "#fff";
     context.fillText(score, width - 50, 80);
@@ -101,12 +103,12 @@ function render() {
 
 // Listen for clicks on desktop. touchstart on mobile
 window.addEventListener('keyup', (event) => {
-    if (event.keyCode === 32) // Spacebar
-        bird.flyUp();
+    // if (event.keyCode === 32) // Spacebar
+    //     bird.flyUp();
 });
 
 window.addEventListener('touchstart', () => {
-    bird.flyUp();
+    // bird.flyUp();
 });
 
 // resize the canvas to fill browser window dynamically
