@@ -85,7 +85,7 @@ class Bird {
     }
 
     flyUp() {
-        this.velocity -= 10;
+        this.velocity -= 16;
     }
 
     /**
