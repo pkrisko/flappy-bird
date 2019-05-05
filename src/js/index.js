@@ -51,9 +51,10 @@ function mainLoop(timestamp) {
     window.requestAnimationFrame(mainLoop);
 }
 
-function touchingPipe(bird, pipe) {
-    const xIsIntersecting = bird.x - 5 + bird.imgWidth >= pipe.x && bird.x - 5 + bird.imgWidth <= pipe.x + pipe.pipeWidth,
-        yIsIntersecting = bird.y < pipe.yTop || bird.y + bird.imgHeight > pipe.yBottom;
+function touchingPipe(pipe) {
+    const xIsIntersecting = bird.x -7.5 + bird.imgWidth >= pipe.x && bird.x - 7.5 + bird.imgWidth <= pipe.x + pipe.pipeWidth,
+        yIsIntersecting = bird.y+11 < pipe.yTop || bird.y + 23 + bird.imgHeight > pipe.yBottom ;
+
     return xIsIntersecting && yIsIntersecting;
 }
 
