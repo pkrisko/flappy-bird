@@ -34,7 +34,6 @@ class Queue {
      * Remove from the front
      */
     dequeue() {
-
         if (!this.head) return; // empty
         this.size--;
         if (this.head === this.tail) { // one element

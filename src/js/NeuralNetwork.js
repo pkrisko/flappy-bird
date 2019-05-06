@@ -132,10 +132,6 @@ class NeuralNetwork {
 		this.weights_ih.add(weight_ih_deltas);
 		// Adjust the bias by its deltas (which is just the gradients)
 		this.bias_h.add(hidden_gradient);
-
-		// outputs.print();
-		// targets.print();
-		// error.print();
 	}
 
 	serialize() {
