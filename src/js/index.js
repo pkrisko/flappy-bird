@@ -74,9 +74,9 @@ function tick() {
         const firstBird = activeBirds[0];
         if (Math.abs((firstBird.x + firstBird.imgWidth) - (allPipes.pipes.head.data.x + allPipes.pipes.head.data.pipeWidth)) < 2)
             score++;
+    } else {
+        nextGeneration();
     }
-    // score++;
-    // bird.tick();
     for (let i = activeBirds.length - 1; i >= 0; i--) {
         let bird = activeBirds[i];
         // Bird uses its brain!
@@ -99,7 +99,7 @@ function render() {
     allPipes.render();
     context.font = '48px sans-serif';
     context.fillStyle = "#fff";
-    context.fillText(score, width - 50, 80);
+    context.fillText(score, width/ 2 - 50, 80);
 }
 
 // Listen for clicks on desktop. touchstart on mobile
@@ -125,3 +125,77 @@ var audio = new Audio('http://files2.earmilk.com/upload/mp3/2012-04/Theophilus%2
 setTimeout(() => {
     // audio.play();
 }, 500);
+
+// Code for creating new generations..
+
+// Start the game over
+function resetGame() {
+    // counter = 0;
+    // Resetting best bird score to 0
+    // if (bestBird) {
+    //     bestBird.score = 0;
+    // }
+    score = 0;
+    allPipes =  new AllPipes();
+    window.requestAnimationFrame(mainLoop);
+}
+
+// Create the next generation
+export function nextGeneration() {
+    resetGame();
+    // Normalize the fitness values 0-1
+    normalizeFitness(allBirds);
+    // Generate a new set of birds
+    activeBirds = generate(allBirds);
+    // Copy those birds to another array
+    allBirds = activeBirds.slice();
+}
+
+// Generate a new population of birds
+function generate(oldBirds) {
+    let newBirds = [];
+    for (let i = 0; i < oldBirds.length; i++) {
+        // Select a bird based on fitness
+        let bird = poolSelection(oldBirds);
+        newBirds[i] = bird;
+    }
+    return newBirds;
+}
+
+// Normalize the fitness of all birds
+function normalizeFitness(birds) {
+    // Good for first generations, but might need to limit this above a certain score threshold.
+    birds.forEach((bird) => bird.score = Math.pow(bird.score, 2));
+    // Add up all the scores
+    let sum = 0;
+    birds.forEach((bird) => sum += bird.score);
+    // Divide by the sum
+    birds.forEach((bird) => bird.fitness = bird.score / sum)
+}
+
+
+// An algorithm for picking one bird from an array
+// based on fitness
+function poolSelection(birds) {
+    // Start at 0
+    let index = 0;
+
+    // Pick a random number between 0 and 1
+    let r = Math.random(1);
+
+    // Keep subtracting probabilities until you get less than zero
+    // Higher probabilities will be more likely to be fixed since they will
+    // subtract a larger number towards zero
+    while (r > 0) {
+        r -= birds[index].fitness;
+        // And move on to the next
+        index += 1;
+    }
+
+    // Go back one
+    index -= 1;
+
+    // Make sure it's a copy!
+    // (this includes mutation)
+    return birds[index].copy();
+}

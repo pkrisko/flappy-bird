@@ -5,25 +5,33 @@ const img = document.createElement('IMG');
 // img.setAttribute('src', 'https://www.pngkey.com/png/full/50-502247_flappy-bird-no-background.png');
 img.setAttribute('src', 'img/blue-bird.png');
 //Other Static variables
-const gravity = 0.85;
+const gravity = 0.8;
 const toRadians = Math.PI / 360;
-
-// Mutation function to be passed into bird.brain
-function mutate(x) {
-    if (random(1) < 0.1) {
-        let offset = randomGaussian() * 0.5;
-        let newx = x + offset;
-        return newx;
-    } else {
-        return x;
-    }
-}
 
 function constrainRange(value, start1, stop1, start2, stop2) {
     const range1 = stop1 - start1;
     const range2 = stop2 - start2;
     const relativePosition = (value - start1) / range1 ; // 10
     return (relativePosition * range2) + start2;
+}
+
+// Standard Normal variate using Box-Muller transform.
+function randomBoxMuller() {
+    var u = 0, v = 0;
+    while(u === 0) u = Math.random(); //Converting [0,1) to (0,1)
+    while(v === 0) v = Math.random();
+    return Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
+}
+
+// Mutation function to be passed into bird.brain
+function mutate(x) {
+    if (Math.random(1) < 0.1) {
+        let offset = randomBoxMuller() * 0.5;
+        let newx = x + offset;
+        return newx;
+    } else {
+        return x;
+    }
 }
 
 class Bird {
@@ -40,6 +48,12 @@ class Bird {
         this.yMax = height - this.imgHeight;
         this.lift = -25;
         this.velocity = 0;
+        this.hitboxCoords = {
+            topLeft: { x: 0, y: 0 },
+            topRight: { x: 0, y: 0 },
+            bottomRight: { x: 0, y: 0 },
+            bottomLeft: { x: 0, y: 0 }
+        }
         // Is this a copy of another Bird or a new one?
         // The Neural Network is the bird's "brain"
         if (brain instanceof NeuralNetwork) {
@@ -48,7 +62,6 @@ class Bird {
         } else {
             this.brain = new NeuralNetwork(5, 8, 2);
         }
-
         // Score is how many frames it's been alive
         this.score = 0;
         // Fitness is normalized version of score
@@ -85,7 +98,11 @@ class Bird {
     }
 
     flyUp() {
-        this.velocity -= 16;
+        if (this.velocity > 5) { // Falling down fast
+            this.velocity += (-21);
+        } else { // falling down slow or going up
+            this.velocity += (-10);
+        }
     }
 
     /**
