@@ -5,7 +5,7 @@ const img = document.createElement('IMG');
 // img.setAttribute('src', 'https://www.pngkey.com/png/full/50-502247_flappy-bird-no-background.png');
 img.setAttribute('src', 'img/blue-bird.png');
 //Other Static variables
-const gravity = 0.8;
+const gravity = 0.85;
 const toRadians = Math.PI / 360;
 
 // Mutation function to be passed into bird.brain
@@ -85,11 +85,7 @@ class Bird {
     }
 
     flyUp() {
-        if (this.velocity > 5) { // Falling down fast
-            this.velocity += (-21);
-        } else { // falling down slow or going up
-            this.velocity += (-10);
-        }
+        this.velocity -= 16;
     }
 
     /**
