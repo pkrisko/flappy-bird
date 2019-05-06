@@ -6,6 +6,7 @@ window.canvas = document.getElementById('canvas');
 window.context = canvas.getContext("2d");
 window.height = window.innerHeight;
 window.width = window.innerWidth;
+window.currGeneration = 1;
 
 // File scoped variables
 const maxFPS = 60; // set to 10 and watch what happens
@@ -16,14 +17,13 @@ let allPipes;
 let score = 0;
 let lastFrameTimeMs = 0;
 // How big is the population
-let totalPopulation = 1000;
+let totalPopulation = 5000;
 // All active birds (not yet collided with pipe)
 let activeBirds = [];
 // All birds for any given population
 let allBirds = [];
 
 function setup() {
-    // bird = new Bird();
     // Create a population
     for (let i = 0; i < totalPopulation; i++) {
         let bird = new Bird();
@@ -53,15 +53,14 @@ function mainLoop(timestamp) {
 
 function touchingPipe(bird, pipe) {
     const xIsIntersecting = bird.x -7.5 + bird.imgWidth >= pipe.x && bird.x - 7.5 + bird.imgWidth <= pipe.x + pipe.pipeWidth,
-        yIsIntersecting = bird.y+11 < pipe.yTop || bird.y + 23 + bird.imgHeight > pipe.yBottom ;
-
+        yIsIntersecting = bird.y+11 < pipe.yTop || bird.y + 23 + bird.imgHeight > pipe.yBottom;
     return xIsIntersecting && yIsIntersecting;
 }
 
 function isDead(bird) {
     const firstPipe = allPipes.pipes.head.data,
         secondPipe = allPipes.pipes.head.next.data;
-    // If bird is fallen through map, or touching a poipe.
+    // If bird is fallen through map, or touching a pipe.
     return (bird.y + bird.imgHeight > height || touchingPipe(bird, firstPipe) || touchingPipe(bird, secondPipe));
 }
 
@@ -95,11 +94,16 @@ function tick() {
  */
 function render() {
     context.drawImage(backgroundImg, 0, 0, width, height);
-    activeBirds.forEach(bird => bird.render());
+    for (let idx = 0; idx < 50 && idx < activeBirds.length; idx++)
+        activeBirds[idx].render();
+    // activeBirds.forEach(bird => bird.render());
     allPipes.render();
     context.font = '48px sans-serif';
     context.fillStyle = "#fff";
-    context.fillText(score, width/ 2 - 50, 80);
+    context.fillText(score, width - 150, 80);
+    context.font = '24px sans-serif';
+    context.fillText(`Gen: ${currGeneration}`, width - 150, 30);
+    context.fillText(`${activeBirds.length} birds`, width - 150, 110);
 }
 
 // Listen for clicks on desktop. touchstart on mobile
@@ -120,11 +124,11 @@ function resizeCanvas() {
 }
 resizeCanvas();
 
-var audio = new Audio('http://files2.earmilk.com/upload/mp3/2012-04/Theophilus%20London%20Ft%20ASAP%20Rocky-Big%20Spender.mp3?_ga=2.259002762.1018058977.1556944267-758562653.1556944266');
+// var audio = new Audio('http://files2.earmilk.com/upload/mp3/2012-04/Theophilus%20London%20Ft%20ASAP%20Rocky-Big%20Spender.mp3?_ga=2.259002762.1018058977.1556944267-758562653.1556944266');
 
-setTimeout(() => {
-    // audio.play();
-}, 500);
+// setTimeout(() => {
+//     // audio.play();
+// }, 500);
 
 // Code for creating new generations..
 
@@ -135,6 +139,7 @@ function resetGame() {
     // if (bestBird) {
     //     bestBird.score = 0;
     // }
+    currGeneration++;
     score = 0;
     allPipes =  new AllPipes();
     window.requestAnimationFrame(mainLoop);
@@ -165,7 +170,7 @@ function generate(oldBirds) {
 // Normalize the fitness of all birds
 function normalizeFitness(birds) {
     // Good for first generations, but might need to limit this above a certain score threshold.
-    birds.forEach((bird) => bird.score = Math.pow(bird.score, 2));
+    birds.forEach((bird) => bird.score = Math.pow(bird.score, 5));
     // Add up all the scores
     let sum = 0;
     birds.forEach((bird) => sum += bird.score);
@@ -174,13 +179,10 @@ function normalizeFitness(birds) {
 }
 
 
-// An algorithm for picking one bird from an array
-// based on fitness
+// An algorithm for picking one bird from an array based on fitness
 function poolSelection(birds) {
-    // Start at 0
     let index = 0;
-    // Pick a random number between 0 and 1
-    let r = Math.random(1);
+    let r = Math.random(1); // Pick a random number between 0 and 1
     // Keep subtracting probabilities until you get less than zero
     // Higher probabilities will be more likely to be fixed since they will
     // subtract a larger number towards zero
