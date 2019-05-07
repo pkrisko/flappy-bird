@@ -87,8 +87,8 @@ class Bird {
             beforeLeftFirstPipe;
             // need to calculate topy and bottom y of next 3 vertical lines with pipe
         let closest = (beforeLeftFirstPipe) ? headData : { x: headData.x, yTop: headData.yTop, yBottom: headData.yBottom };
-        let secondClosest = (beforeLeftFirstPipe) ? { x: headData.x, yTop: headData.yTop, yBottom: headData.yBottom} : secondData;
-        let thirdClosest = (beforeLeftFirstPipe) ? secondData : { x: secondData.x, yTop: secondData.yTop, yBottom: secondData.yBottom };
+        let secondClosest = (beforeLeftFirstPipe) ? { x: headData.x + 80, yTop: headData.yTop, yBottom: headData.yBottom} : secondData;
+        let thirdClosest = (beforeLeftFirstPipe) ? secondData : { x: secondData.x + 80, yTop: secondData.yTop, yBottom: secondData.yBottom };
         // Now create the inputs to the neural network
         let inputs = [];
         // x position of closest pipe
