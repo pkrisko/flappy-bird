@@ -83,11 +83,12 @@ class Bird {
     // if it should jump or not jump!
     think(pipes) {
         let headData = pipes.head.data,
-            secondData = pipes.head.next.data;
+            secondData = pipes.head.next.data,
+            beforeLeftFirstPipe;
             // need to calculate topy and bottom y of next 3 vertical lines with pipe
-        let closest = (this.x < headData.x) ? headData : { x: headData.x, yTop: headData.yTop, yBottom: headData.yBottom };
-        let secondClosest = (this.x < headData.x) ? { x: headData.x, yTop: headData.yTop, yBottom: headData.yBottom} : secondData;
-        let thirdClosest = (this.x < headData.x) ? secondData : { x: secondData.x, yTop: secondData.yTop, yBottom: secondData.yBottom };
+        let closest = (beforeLeftFirstPipe) ? headData : { x: headData.x, yTop: headData.yTop, yBottom: headData.yBottom };
+        let secondClosest = (beforeLeftFirstPipe) ? { x: headData.x, yTop: headData.yTop, yBottom: headData.yBottom} : secondData;
+        let thirdClosest = (beforeLeftFirstPipe) ? secondData : { x: secondData.x, yTop: secondData.yTop, yBottom: secondData.yBottom };
         // Now create the inputs to the neural network
         let inputs = [];
         // x position of closest pipe
