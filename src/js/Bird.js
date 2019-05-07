@@ -15,6 +15,10 @@ function constrainRange(value, start1, stop1, start2, stop2) {
     return (relativePosition * range2) + start2;
 }
 
+function sigmoid(t) {
+    return 1/(1+Math.pow(Math.E, -t));
+}
+
 // Standard Normal variate using Box-Muller transform.
 function randomBoxMuller() {
     var u = 0, v = 0;
@@ -22,13 +26,13 @@ function randomBoxMuller() {
     while(v === 0) v = Math.random();
     let num = Math.sqrt( -2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
     num = (num / 10.0) + 0.5; // Translate to 0 -> 1
-    return (num > 1 || num < 0) ? randn_bm() : num; // resample between 0 and 1
+    return (num > 1 || num < 0) ? randomBoxMuller() : num; // resample between 0 and 1
 }
 
 // Mutation function to be passed into bird.brain
 function mutate(x) {
     // Try 0.2 / Math.log(currGeneration + 1)
-    if (Math.random(1) < 0.2 / Math.log(currGeneration + 1)) {
+    if (Math.random(1) < 1 - sigmoid(currGeneration / 4)) {
         let offset = randomBoxMuller() * 0.5;
         let newx = x + offset;
         return newx;
@@ -63,7 +67,7 @@ class Bird {
             this.brain = brain.copy();
             this.brain.mutate(mutate);
         } else {
-            this.brain = new NeuralNetwork(5, 8, 2);
+            this.brain = new NeuralNetwork(11, 11, 2);
         }
         // Score is how many frames it's been alive
         this.score = 0;
@@ -78,7 +82,12 @@ class Bird {
     // This is the key function now that decides
     // if it should jump or not jump!
     think(pipes) {
-        let closest = (this.x < pipes.head.data.x) ? pipes.head.data : pipes.head.next.data;
+        let headData = pipes.head.data,
+            secondData = pipes.head.next.data;
+            // need to calculate topy and bottom y of next 3 vertical lines with pipe
+        let closest = (this.x < headData.x) ? headData : { x: headData.x, yTop: headData.yTop, yBottom: headData.yBottom };
+        let secondClosest = (this.x < headData.x) ? { x: headData.x, yTop: headData.yTop, yBottom: headData.yBottom} : secondData;
+        let thirdClosest = (this.x < headData.x) ? secondData : { x: secondData.x, yTop: secondData.yTop, yBottom: secondData.yBottom };
         // Now create the inputs to the neural network
         let inputs = [];
         // x position of closest pipe
@@ -87,10 +96,22 @@ class Bird {
         inputs[1] = constrainRange(closest.yTop, 0, height, 0, 1);
         // bottom of closest pipe opening
         inputs[2] = constrainRange(closest.yBottom, 0, height, 0, 1);
+        // x position of second closest pipe
+        inputs[3] = constrainRange(secondClosest.x, this.x, width, 0, 1);
+        // top of second closest pipe opening
+        inputs[4] = constrainRange(secondClosest.yTop, 0, height, 0, 1);
+        // bottom of second closest pipe opening
+        inputs[5] = constrainRange(secondClosest.yBottom, 0, height, 0, 1);
+        // x position of second closest pipe
+        inputs[6] = constrainRange(thirdClosest.x, this.x, width, 0, 1);
+        // top of second closest pipe opening
+        inputs[7] = constrainRange(thirdClosest.yTop, 0, height, 0, 1);
+        // bottom of second closest pipe opening
+        inputs[8] = constrainRange(thirdClosest.yBottom, 0, height, 0, 1);
         // bird's y position
-        inputs[3] = constrainRange(this.y, 0, height, 0, 1);
+        inputs[9] = constrainRange(this.y, 0, height, 0, 1);
         // bird's y velocity
-        inputs[4] = constrainRange(this.velocity, -5, 5, 0, 1);
+        inputs[10] = constrainRange(this.velocity, -10, 10, 0, 1);
         // Get the outputs from the network
         let action = this.brain.predict(inputs);
         // Decide to jump or not!

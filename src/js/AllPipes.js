@@ -1,7 +1,7 @@
 import Pipe from './Pipe';
 import Queue from './Queue';
 
-const distanceBetweenPipes = 200;
+const distanceBetweenPipes = 220;
 
 class AllPipes {
     constructor() {
