@@ -84,7 +84,7 @@ class Bird {
     think(pipes) {
         let headData = pipes.head.data,
             secondData = pipes.head.next.data,
-            beforeLeftFirstPipe;
+            beforeLeftFirstPipe = this.x < headData.x;
         // if (x is true) ? then execute this : else this
             // need to calculate topy and bottom y of next 3 vertical lines with pipe
         let closest = (beforeLeftFirstPipe)
