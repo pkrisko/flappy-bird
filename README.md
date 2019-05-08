@@ -8,7 +8,7 @@ View Latest Build
 
 Development Setup
 --
-1. `$ npm install` in root directory of project.
-2. `$ npm run build` in root directory to compile the source code as you make changes.
-3. `$ open public/index.html` Open public/index.html in your browser (or just double click the file).
-4. Optionally, serve index.html with `$ npm start` in public folder. Requires `http-server`.
+1. Run `$ npm install` in client/ directory of project.
+2. Run `$ npm run build` in client/ directory to compile the source code as you make front end changes.
+3. `$ open build/index.html` Open build/index.html in your browser (or just double click the file).
+4. Optionally, serve index.html with `$ npm start` in build folder. Requires `http-server`.

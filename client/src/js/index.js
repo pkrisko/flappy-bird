@@ -18,7 +18,7 @@ let score = 0;
 let highScore = 0;
 let lastFrameTimeMs = 0;
 // How big is the population
-let totalPopulation = 4000;
+let totalPopulation = 1;
 // All active birds (not yet collided with pipe)
 let activeBirds = [];
 // All birds for any given population
