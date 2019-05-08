@@ -31,8 +31,7 @@ function randomBoxMuller() {
 
 // Mutation function to be passed into bird.brain
 function mutate(x) {
-    // Try 0.2 / Math.log(currGeneration + 1)
-    if (Math.random(1) < 1 - sigmoid(currGeneration / 4)) { // this number 4. mess around with this.
+    if (Math.random(1) < 1 - sigmoid(currGeneration / 4.2)) { // this number 4.5 mess around with this.
         let offset = randomBoxMuller() * 0.5;
         let newx = x + offset;
         return newx;
