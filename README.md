@@ -14,4 +14,10 @@ Development Setup
 3. `$ open public/index.html` Open public/index.html in your browser (or just double click the file).
 4. Optionally, serve index.html with `$ npm start` in public folder. Requires `http-server`.
 
-### Backend
+
+# MONGODB INSTALLATION
+```brew unlink mongodb
+   brew install mongodb
+  ```
+#To Connect To MONGO DB database
+```mongod```
