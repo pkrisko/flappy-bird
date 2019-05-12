@@ -5,7 +5,7 @@ const img = document.createElement('IMG');
 // img.setAttribute('src', 'https://www.pngkey.com/png/full/50-502247_flappy-bird-no-background.png');
 img.setAttribute('src', 'img/blue-bird.png');
 //Other Static variables
-const gravity = 0.8;
+const gravity = 0.5;
 const toRadians = Math.PI / 360;
 
 function constrainRange(value, start1, stop1, start2, stop2) {
@@ -122,18 +122,19 @@ class Bird {
         // Get the outputs from the network
         let action = this.brain.predict(inputs);
         // Decide to jump or not!
-        if (action[1] > action[0]) {
-            this.flyUp();
-        }
+        // if (action[1] > action[0]) {
+        //     this.flyUp();
+        // }
 
     }
 
     flyUp() {
-        if (this.velocity > 5) { // Falling down fast
-            this.velocity += (-21);
-        } else { // falling down slow or going up
-            this.velocity += (-10);
-        }
+        this.velocity += (-16);
+        // if (this.velocity > 0) { // Falling down fast
+
+        // } else { // falling down slow or going up
+        //     this.velocity += (-5);
+        // }
     }
 
     /**

@@ -9,7 +9,7 @@ window.height = width * 1.61803398875; // uses the width directly above.
 window.currGeneration = 1;
 
 // File scoped variables
-const maxFPS = 120; // set to 10 and watch what happens
+const maxFPS = 100; // set to 10 and watch what happens
 const backgroundImg = document.createElement('IMG');
 backgroundImg.setAttribute('src', 'http://blog.itselectlab.com/wp-content/uploads/background.png');
 let allPipes;
@@ -17,7 +17,7 @@ let score = 0;
 let highScore = 0;
 let lastFrameTimeMs = 0;
 // How big is the population
-let totalPopulation = 4000;
+let totalPopulation = 1;
 // All active birds (not yet collided with pipe)
 let activeBirds = [];
 // All birds for any given population
@@ -122,12 +122,12 @@ function render() {
 
 // Listen for clicks on desktop. touchstart on mobile
 window.addEventListener('keyup', (event) => {
-    // if (event.keyCode === 32) // Spacebar
-    //     bird.flyUp();
+    if (event.keyCode === 32) // Spacebar
+        activeBirds[0].flyUp();
 });
 
 window.addEventListener('touchstart', () => {
-    // bird.flyUp();
+    activeBirds[0].flyUp();
 });
 
 // resize the canvas to fill browser window dynamically
