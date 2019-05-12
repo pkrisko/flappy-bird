@@ -22,7 +22,7 @@ class Pipe {
     }
 
     tick() {
-        this.x -= 3;
+        this.x -= 2;
     }
 
     render() {

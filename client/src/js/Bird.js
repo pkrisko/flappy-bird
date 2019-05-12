@@ -5,7 +5,7 @@ const img = document.createElement('IMG');
 // img.setAttribute('src', 'https://www.pngkey.com/png/full/50-502247_flappy-bird-no-background.png');
 img.setAttribute('src', 'img/blue-bird.png');
 //Other Static variables
-const gravity = 0.8;
+const gravity = 0.5;
 const toRadians = Math.PI / 360;
 
 function constrainRange(value, start1, stop1, start2, stop2) {
@@ -109,11 +109,11 @@ class Bird {
         inputs[4] = constrainRange(secondClosest.yTop, 0, height, 0, 1);
         // bottom of second closest pipe opening
         inputs[5] = constrainRange(secondClosest.yBottom, 0, height, 0, 1);
-        // x position of second closest pipe
+        // x position of third closest pipe
         inputs[6] = constrainRange(thirdClosest.x, this.x, width, 0, 1);
-        // top of second closest pipe opening
+        // top of third closest pipe opening
         inputs[7] = constrainRange(thirdClosest.yTop, 0, height, 0, 1);
-        // bottom of second closest pipe opening
+        // bottom of third closest pipe opening
         inputs[8] = constrainRange(thirdClosest.yBottom, 0, height, 0, 1);
         // bird's y position
         inputs[9] = constrainRange(this.y, 0, height, 0, 1);
@@ -129,11 +129,7 @@ class Bird {
     }
 
     flyUp() {
-        if (this.velocity > 5) { // Falling down fast
-            this.velocity += (-21);
-        } else { // falling down slow or going up
-            this.velocity += (-10);
-        }
+        this.velocity -= 15; // Negative velocity makes y decrease, and bird go up.
     }
 
     /**

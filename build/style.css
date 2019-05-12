@@ -1,12 +1,12 @@
 body{
     margin: 0; /* Override chrome user-agent stylesheet */
-    height: 100vh;
+    /* height: 100vh; For browsers that don't support CSS3 variables */
+    height: calc(var(--vh, 1vh) * 100);
     display: flex;
     align-items: center;
     justify-content: center;
-    background: black;
+    background: #1c1517;
 }
 #wrapper{
-    background: black;
-    fill: black;
+    margin-top: -65px;
 }
