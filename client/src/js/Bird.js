@@ -129,7 +129,7 @@ class Bird {
     }
 
     flyUp() {
-        this.velocity += (-16);
+        this.velocity += (-15);
         // if (this.velocity > 0) { // Falling down fast
 
         // } else { // falling down slow or going up
