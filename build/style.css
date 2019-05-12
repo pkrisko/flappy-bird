@@ -1,3 +1,12 @@
 body{
     margin: 0; /* Override chrome user-agent stylesheet */
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: black;
+}
+#wrapper{
+    background: black;
+    fill: black;
 }

@@ -4,15 +4,14 @@ import AllPipes from './AllPipes';
 // Global variables
 window.canvas = document.getElementById('canvas');
 window.context = canvas.getContext("2d");
-window.height = window.innerHeight;
-window.width = window.innerWidth;
+window.width = Math.min(window.innerWidth, 420); // 🌴
+window.height = width * 1.61803398875; // uses the width directly above.
 window.currGeneration = 1;
 
 // File scoped variables
 const maxFPS = 120; // set to 10 and watch what happens
 const backgroundImg = document.createElement('IMG');
 backgroundImg.setAttribute('src', 'http://blog.itselectlab.com/wp-content/uploads/background.png');
-// let bird;
 let allPipes;
 let score = 0;
 let highScore = 0;
