@@ -33,6 +33,10 @@ exports.addGenerationStats = (req, res) => {
   const interaction = getParam("interaction"),
     epochNumber = getParam("epochNumber"),
     epochScore = getParam("epochScore");
-  setStats(interaction, epochNumber, epochScore);
-  res.status(200).send(`${epochNumber} ${epochScore} ${interaction}`);
+  if (!interaction || !epochNumber || !epochScore) {
+    res.status(201).send(`Invalid parameters. 1${interaction}, 2${epochNumber}, 3${epochScore}`);
+  } else {
+    setStats(interaction, epochNumber, epochScore);
+    res.status(200).send(`${epochNumber} ${epochScore} ${interaction}`);
+  }
 };
