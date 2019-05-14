@@ -152,17 +152,31 @@ resizeCanvas();
 
 // Code for creating new generations..
 
+const Http = new XMLHttpRequest();
+const addGenerationStatsUrl='https://us-central1-flappy-server.cloudfunctions.net/add-generation-stats';
+
+Http.onreadystatechange=(e)=>{
+    console.log(Http.responseText)
+}
+
+function addGenerationStats() {
+    const postData = {
+        "interaction": "NeedToMakeThisUnique",
+        "epochNumber": currGeneration,
+        "epochScore": score
+    }
+    Http.open("POST", addGenerationStatsUrl);
+    Http.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    Http.send(JSON.stringify(postData));
+}
+
 // Start the game over
 function resetGame() {
-    // counter = 0;
-    // Resetting best bird score to 0
-    // if (bestBird) {
-    //     bestBird.score = 0;
-    // }
-    console.log(`Generation: ${currGeneration} Score: ${score}`);
+    // Make ajax call.
+    addGenerationStats();
     currGeneration++;
     score = 0;
-    allPipes =  new AllPipes();
+    allPipes = new AllPipes();
     window.requestAnimationFrame(mainLoop);
 }
 
