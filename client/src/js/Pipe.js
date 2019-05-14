@@ -26,7 +26,6 @@ class Pipe {
     }
 
     render() {
-        const centerX = this.x + (this.pipeWidth / 2);
         context.save();
         context.translate(this.x, this.yTop);
         context.scale(-1, 1);
