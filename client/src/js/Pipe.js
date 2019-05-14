@@ -22,11 +22,10 @@ class Pipe {
     }
 
     tick() {
-        this.x -= 3;
+        this.x -= 2;
     }
 
     render() {
-        const centerX = this.x + (this.pipeWidth / 2);
         context.save();
         context.translate(this.x, this.yTop);
         context.scale(-1, 1);

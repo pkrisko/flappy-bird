@@ -5,23 +5,29 @@ import AllPipes from './AllPipes';
 window.canvas = document.getElementById('canvas');
 window.context = canvas.getContext("2d");
 window.width = Math.min(window.innerWidth, 420); // 🌴
-window.height = width * 1.61803398875; // uses the width directly above.
+window.height = width * 1.5; // uses the width directly above.
 window.currGeneration = 1;
+window.floorHeight = 70;
+
+// File scoped constants
+const maxFPS = 100; // set to 10 and watch what happens
+const maxBirdsRendered = 20;
 
 // File scoped variables
-const maxFPS = 120; // set to 10 and watch what happens
-const backgroundImg = document.createElement('IMG');
-backgroundImg.setAttribute('src', 'http://blog.itselectlab.com/wp-content/uploads/background.png');
 let allPipes;
+let currentTick = 0;
 let score = 0;
 let highScore = 0;
 let lastFrameTimeMs = 0;
-// How big is the population
-let totalPopulation = 4000;
-// All active birds (not yet collided with pipe)
-let activeBirds = [];
-// All birds for any given population
-let allBirds = [];
+let totalPopulation = 4000; // Total birds in each generation
+let activeBirds = []; // All active birds (not yet collided with pipe)
+let allBirds = []; // All birds for any given population
+
+// File scoped images
+const backgroundImg = document.createElement('IMG');
+backgroundImg.setAttribute('src', 'img/background.png');
+const floorImg = document.createElement('IMG');
+floorImg.setAttribute('src', 'img/floor.png');
 
 function setup() {
     // Create a population
@@ -36,24 +42,17 @@ function setup() {
 setup();
 
 /**
- * Heartbeat of the game. Update and draw the game 60 times a second.
+ * Heartbeat of the game. Update and draw the game 100 times a second.
  * @param {*} timestamp
  */
 function mainLoop(timestamp) {
-    // const progress = timestamp - lastFrameTimeMs;
     if (timestamp < lastFrameTimeMs + (1000 / maxFPS)) {
         window.requestAnimationFrame(mainLoop);
         return;
     }
     lastFrameTimeMs = timestamp;
     tick(); // update game state FIRST
-    if (activeBirds.length > 0) {
-        const firstBird = activeBirds[0];
-        if (firstBird.fitness % 2 == 0)
-            render();
-    } else {
-        render();
-    }
+    render();
     window.requestAnimationFrame(mainLoop);
 }
 
@@ -67,7 +66,7 @@ function isDead(bird) {
     const firstPipe = allPipes.pipes.head.data,
         secondPipe = allPipes.pipes.head.next.data;
     // If bird is fallen through map, or touching a pipe.
-    return (bird.y + bird.imgHeight > height || touchingPipe(bird, firstPipe) || touchingPipe(bird, secondPipe));
+    return (bird.y + bird.imgHeight > height - floorHeight || touchingPipe(bird, firstPipe) || touchingPipe(bird, secondPipe));
 }
 
 /**
@@ -75,6 +74,8 @@ function isDead(bird) {
  * @param {*} progress
  */
 function tick() {
+    if (activeBirds.length > 0)
+        currentTick = activeBirds[0].score;
     if (activeBirds.length > 0) {
         const firstBird = activeBirds[0];
         if (Math.abs((firstBird.x + firstBird.imgWidth) - (allPipes.pipes.head.data.x + allPipes.pipes.head.data.pipeWidth)) < 2) {
@@ -91,15 +92,23 @@ function tick() {
     }
     for (let i = activeBirds.length - 1; i >= 0; i--) {
         let bird = activeBirds[i];
-        // Bird uses its brain!
-        bird.think(allPipes.pipes);
+        bird.think(allPipes.pipes); // Use bird brain
         bird.tick();
-
-        if (isDead(bird)) {
+        if (isDead(bird)) { // If dead, get yeeted.
             activeBirds.splice(i, 1);
         }
     }
     allPipes.tick();
+}
+
+function drawGameInfo() {
+context.font = '48px sans-serif';
+    context.fillStyle = "#fff";
+    context.fillText(score, width - 150, 80);
+    context.font = '24px sans-serif';
+    context.fillText(`Gen: ${currGeneration}`, width - 150, 30);
+    context.fillText(`${activeBirds.length} birds`, width - 150, 110);
+    context.fillText(`Top: ${highScore}`, width - 150, 140);
 }
 
 /**
@@ -107,17 +116,14 @@ function tick() {
  */
 function render() {
     context.drawImage(backgroundImg, 0, 0, width, height);
-    for (let idx = 0; idx < 2 && idx < activeBirds.length; idx++)
+    for (let idx = 0; idx < maxBirdsRendered && idx < activeBirds.length; idx++)
         activeBirds[idx].render();
-    // activeBirds.forEach(bird => bird.render());
     allPipes.render();
-    context.font = '48px sans-serif';
-    context.fillStyle = "#fff";
-    context.fillText(score, width - 150, 80);
-    context.font = '24px sans-serif';
-    context.fillText(`Gen: ${currGeneration}`, width - 150, 30);
-    context.fillText(`${activeBirds.length} birds`, width - 150, 110);
-    context.fillText(`Top: ${highScore}`, width - 150, 140);
+    // Draw the bottom part aka floor.
+    // 16, is because every 20 pixels is length of diagonal lines in floor image. creates seamless animation.
+    context.drawImage(floorImg, currentTick % 20, 0, width, floorHeight, 0, height - floorHeight, width, floorHeight);
+    // Draw text with current game status.
+    drawGameInfo();
 }
 
 // Listen for clicks on desktop. touchstart on mobile
