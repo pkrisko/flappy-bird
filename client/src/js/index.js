@@ -1,5 +1,6 @@
 import Bird from './Bird';
 import AllPipes from './AllPipes';
+import { addGenerationStats, addKeyVariableStats } from './CloudFunctionCalls';
 
 // Global variables
 window.canvas = document.getElementById('canvas');
@@ -9,9 +10,16 @@ window.height = width * 1.5; // uses the width directly above.
 window.currGeneration = 1;
 window.floorHeight = 70;
 
+// Variables that heavily affect how well the birds learn. Will be changed by
+// Selenium in the future.
+window.learningRate = .1;
+window.mutationRateMultiplier = 4.2;
+window.numHiddenLayers = 11;
+
 // File scoped constants
 const maxFPS = 100; // set to 10 and watch what happens
 const maxBirdsRendered = 20;
+const interaction = (+new Date).toString();
 
 // File scoped variables
 let allPipes;
@@ -22,9 +30,6 @@ let lastFrameTimeMs = 0;
 let totalPopulation = 4000; // Total birds in each generation
 let activeBirds = []; // All active birds (not yet collided with pipe)
 let allBirds = []; // All birds for any given population
-
-
-
 
 // File scoped images
 const backgroundImg = document.createElement('IMG');
@@ -41,6 +46,7 @@ function setup() {
     }
     allPipes =  new AllPipes();
     window.requestAnimationFrame(mainLoop);
+    addKeyVariableStats(interaction);
 }
 setup();
 
@@ -148,49 +154,16 @@ function resizeCanvas() {
 resizeCanvas();
 
 // var audio = new Audio('http://files2.earmilk.com/upload/mp3/2012-04/Theophilus%20London%20Ft%20ASAP%20Rocky-Big%20Spender.mp3?_ga=2.259002762.1018058977.1556944267-758562653.1556944266');
-
 // setTimeout(() => {
 //     // audio.play();
 // }, 500);
 
 // Code for creating new generations..
 
-const Http = new XMLHttpRequest();
-const addGenerationStatsUrl='https://us-central1-flappy-server.cloudfunctions.net/add-generation-stats';
-
-
-Http.onreadystatechange=(e)=>{
-
-    console.log(Http.responseText)
-}
-
-function addGenerationStats() {
-    const postData = {
-        "interaction": "NeedToMakeThisUnique",
-        "epochNumber": currGeneration,
-        "epochScore": score
-    }
-    const cors = require('cors')({
-      origin: true,
-    });
-    Http.open("POST", addGenerationStatsUrl);
-    //declaring here since to perform header and metadata actions the request
-    //must be open
-  //  Http.setRequestHeader('Access-Control-Allow-Origin', '*');
-    Http.setRequestHeader('Access-Control-Allow-Origin', '*');
-    Http.setRequestHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH');
-    Http.setRequestHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-    Http.setRequestHeader('Access-Control-Allow-Credentials', true);
-    Http.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    //Http.setHeader('Access-Control-Allow-Origin', '*');
-    const req = Http.send(JSON.stringify(postData));
-
-}
-
 // Start the game over
 function resetGame() {
     // Make ajax call.
-    addGenerationStats();
+    addGenerationStats(interaction, currGeneration, score);
     currGeneration++;
     score = 0;
     allPipes = new AllPipes();

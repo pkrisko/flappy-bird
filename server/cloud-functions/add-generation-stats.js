@@ -29,16 +29,18 @@ function setStats(interaction, epochNumber, epochScore) {
  * @param res (Response)
  */
 exports.addGenerationStats = (req, res) => {
-  res.header('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Origin', "*");
+  res.set('Access-Control-Allow-Methods', 'GET, POST');
+  res.set('Access-Control-Allow-Headers', 'Content-Type');
   const getParam = key => req.query[key] || req.body[key];
   const interaction = getParam("interaction"),
     epochNumber = getParam("epochNumber"),
     epochScore = getParam("epochScore");
   if (interaction !== undefined && epochNumber !== undefined && epochScore !== undefined) {
   	setStats(interaction, epochNumber, epochScore);
-    res.status(200).send(`${!epochNumber} ${!epochScore} ${!interaction}`);
+    res.status(200).send(`${epochNumber} ${epochScore} ${interaction}`);
   } else {
-  	res.status(201).send(`Invalid parameters. 1${interaction !== undefined}, 2${epochNumber !== undefined}, 3${epochScore !== undefined}`);
+  	res.status(201).send(`Invalid parameters. 1${interaction}, 2${epochNumber}, 3${epochScore}`);
   }
 
 };
