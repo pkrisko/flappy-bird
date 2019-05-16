@@ -23,6 +23,9 @@ let totalPopulation = 4000; // Total birds in each generation
 let activeBirds = []; // All active birds (not yet collided with pipe)
 let allBirds = []; // All birds for any given population
 
+
+
+
 // File scoped images
 const backgroundImg = document.createElement('IMG');
 backgroundImg.setAttribute('src', 'img/background.png');
@@ -155,7 +158,9 @@ resizeCanvas();
 const Http = new XMLHttpRequest();
 const addGenerationStatsUrl='https://us-central1-flappy-server.cloudfunctions.net/add-generation-stats';
 
+
 Http.onreadystatechange=(e)=>{
+
     console.log(Http.responseText)
 }
 
@@ -165,9 +170,21 @@ function addGenerationStats() {
         "epochNumber": currGeneration,
         "epochScore": score
     }
+    const cors = require('cors')({
+      origin: true,
+    });
     Http.open("POST", addGenerationStatsUrl);
+    //declaring here since to perform header and metadata actions the request
+    //must be open
+  //  Http.setRequestHeader('Access-Control-Allow-Origin', '*');
+    Http.setRequestHeader('Access-Control-Allow-Origin', '*');
+    Http.setRequestHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH');
+    Http.setRequestHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    Http.setRequestHeader('Access-Control-Allow-Credentials', true);
     Http.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    Http.send(JSON.stringify(postData));
+    //Http.setHeader('Access-Control-Allow-Origin', '*');
+    const req = Http.send(JSON.stringify(postData));
+
 }
 
 // Start the game over
