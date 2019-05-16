@@ -31,7 +31,7 @@ function randomBoxMuller() {
 
 // Mutation function to be passed into bird.brain
 function mutate(x) {
-    if (Math.random(1) < 1 - sigmoid(currGeneration / 4.2)) { // this number 4.5 mess around with this.
+    if (Math.random(1) < 1 - sigmoid(currGeneration / mutationRateMultiplier)) { // this number 4.5 mess around with this.
         let offset = randomBoxMuller() * 0.5;
         let newx = x + offset;
         return newx;
@@ -66,7 +66,7 @@ class Bird {
             this.brain = brain.copy();
             this.brain.mutate(mutate);
         } else {
-            this.brain = new NeuralNetwork(11, 11, 2);
+            this.brain = new NeuralNetwork(11, numHiddenLayers, 2);
         }
         // Score is how many frames it's been alive
         this.score = 0;
