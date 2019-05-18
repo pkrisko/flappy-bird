@@ -1,3 +1,12 @@
+/**
+ * Loads all the necessary JavaScript for game state, and handles creating
+ * new generations. Each bird has a Neural Network, and new generations (epochs)
+ * are created using the Genetic Algorithm. Used Daniel Shiffman's library for
+ * NN and GA.
+ * @author pkrisko <patrick.krisko@gmail.com>
+ * @author jofsky <josh.kofksy@gmail.com>
+ */
+
 import Bird from './Bird';
 import AllPipes from './AllPipes';
 import { addGenerationStats, addKeyVariableStats } from './CloudFunctionCalls';

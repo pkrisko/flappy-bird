@@ -3,15 +3,15 @@ const distanceOffWall = 120;
 const img = document.createElement('IMG');
 img.setAttribute('src', 'img/pipe.png');
 
-
+/** @returns random yTop and yBottom seperated by spaceBetweenPipe */
 function generateRandomSpawns() {
     const randY = Math.random() * (height - (2 * distanceOffWall) - spaceBetweenPipe) + distanceOffWall;
-    return {
-        yTop: randY,
-        yBottom: randY + spaceBetweenPipe
-    }
+    return { yTop: randY, yBottom: randY + spaceBetweenPipe }
 }
 
+/** Those little green things you see moving across the screen. Consists of
+ * data to support 1 vertical set of pipes, 1 top and 1 bottom.
+ */
 class Pipe {
     constructor(x) {
         this.x = x;
@@ -21,10 +21,12 @@ class Pipe {
         this.pipeWidth = 80;
     }
 
+    /** Move left by 1. */
     tick() {
         this.x -= 2;
     }
 
+    /** Draw both top and bottom pipe. Top pipe is rotated and flipped */
     render() {
         context.save();
         context.translate(this.x, this.yTop);
