@@ -1,27 +1,34 @@
 import NeuralNetwork from './NeuralNetwork';
 
-//Create image
+// Static variables
 const img = document.createElement('IMG');
-// img.setAttribute('src', 'https://www.pngkey.com/png/full/50-502247_flappy-bird-no-background.png');
 img.setAttribute('src', 'img/blue-bird.png');
-//Other Static variables
 const gravity = 0.5;
 const toRadians = Math.PI / 360;
 
+/**
+ * Helper function for normalizing ranges from 1 range to another.
+ * @param {*} value Value in start range to be transformed / scaled to second range
+ * @param {*} start1 Start value of first range
+ * @param {*} stop1 End value of first range
+ * @param {*} start2 Start value of second range
+ * @param {*} stop2 End value of second range
+ */
 function constrainRange(value, start1, stop1, start2, stop2) {
-    const range1 = stop1 - start1;
-    const range2 = stop2 - start2;
-    const relativePosition = (value - start1) / range1 ; // 10
+    const range1 = stop1 - start1,
+        range2 = stop2 - start2,
+        relativePosition = (value - start1) / range1 ; // 10
     return (relativePosition * range2) + start2;
 }
 
-function sigmoid(t) {
-    return 1/(1+Math.pow(Math.E, -t));
+function sigmoid(x) {
+    return 1 / (1 + Math.pow(Math.E, -x));
 }
 
-// Standard Normal variate using Box-Muller transform.
+// Standard Normal variate using Box-Muller transform. Similar values to random
+// Gausian standard distribution.
 function randomBoxMuller() {
-    var u = 0, v = 0;
+    let u = 0, v = 0;
     while(u === 0) u = Math.random(); //Converting [0,1) to (0,1)
     while(v === 0) v = Math.random();
     let num = Math.sqrt( -2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
@@ -31,7 +38,7 @@ function randomBoxMuller() {
 
 // Mutation function to be passed into bird.brain
 function mutate(x) {
-    if (Math.random(1) < 1 - sigmoid(currGeneration / mutationRateMultiplier)) { // this number 4.5 mess around with this.
+    if (Math.random(1) < 1 - sigmoid(currGeneration / mutationRateMultiplier)) {
         let offset = randomBoxMuller() * 0.5;
         let newx = x + offset;
         return newx;
@@ -86,46 +93,26 @@ class Bird {
             beforeLeftFirstPipe = this.x < headData.x;
         // if (x is true) ? then execute this : else this
             // need to calculate topy and bottom y of next 3 vertical lines with pipe
-        let closest = (beforeLeftFirstPipe)
-                    ? headData
-                    : { x: headData.x + 80, yTop: headData.yTop, yBottom: headData.yBottom };
-        let secondClosest = (beforeLeftFirstPipe)
-                    ? { x: headData.x + 80, yTop: headData.yTop, yBottom: headData.yBottom}
-                    : secondData;
-        let thirdClosest = (beforeLeftFirstPipe)
-                    ? secondData
-                    : { x: secondData.x + 80, yTop: secondData.yTop, yBottom: secondData.yBottom };
+        let closest = (beforeLeftFirstPipe) ? headData : { x: headData.x + 80, yTop: headData.yTop, yBottom: headData.yBottom };
+        let secondClosest = (beforeLeftFirstPipe) ? { x: headData.x + 80, yTop: headData.yTop, yBottom: headData.yBottom} : secondData;
+        let thirdClosest = (beforeLeftFirstPipe) ? secondData : { x: secondData.x + 80, yTop: secondData.yTop, yBottom: secondData.yBottom };
         // Now create the inputs to the neural network
         let inputs = [];
-        // x position of closest pipe
+        // Inputs are the x, yTop, and yBottom of closest 3 pipes, as well
+        // As bird's velocity and y position.
         inputs[0] = constrainRange(closest.x, this.x, width, 0, 1);
-        // top of closest pipe opening
         inputs[1] = constrainRange(closest.yTop, 0, height, 0, 1);
-        // bottom of closest pipe opening
         inputs[2] = constrainRange(closest.yBottom, 0, height, 0, 1);
-        // x position of second closest pipe
         inputs[3] = constrainRange(secondClosest.x, this.x, width, 0, 1);
-        // top of second closest pipe opening
         inputs[4] = constrainRange(secondClosest.yTop, 0, height, 0, 1);
-        // bottom of second closest pipe opening
         inputs[5] = constrainRange(secondClosest.yBottom, 0, height, 0, 1);
-        // x position of third closest pipe
         inputs[6] = constrainRange(thirdClosest.x, this.x, width, 0, 1);
-        // top of third closest pipe opening
         inputs[7] = constrainRange(thirdClosest.yTop, 0, height, 0, 1);
-        // bottom of third closest pipe opening
         inputs[8] = constrainRange(thirdClosest.yBottom, 0, height, 0, 1);
-        // bird's y position
         inputs[9] = constrainRange(this.y, 0, height, 0, 1);
-        // bird's y velocity
         inputs[10] = constrainRange(this.velocity, -10, 10, 0, 1);
-        // Get the outputs from the network
         let action = this.brain.predict(inputs);
-        // Decide to jump or not!
-        if (action[1] > action[0]) {
-            this.flyUp();
-        }
-
+        if (action[1] > action[0]) this.flyUp();
     }
 
     flyUp() {
@@ -140,8 +127,6 @@ class Bird {
         this.score++;
         this.velocity += gravity;
         this.y += this.velocity;
-        // if (this.y >= this.yMax) // TODO: Add gameover condition
-        //     this.y = this.yMax;
         if (this.y <= 0)
             this.y = 0;
     }
@@ -151,9 +136,7 @@ class Bird {
         return toRadians * number * 12;
     }
 
-    /**
-     * Draw a flappy ol' bird at the current position
-     */
+    /** Draw a flappy ol' bird at the current position */
     render() {
         const centerX = this.x + (this.imgWidth / 2),
             centerY = this.y + (this.imgHeight / 2);
@@ -165,5 +148,4 @@ class Bird {
     }
 }
 
-// Lets this be used by other files.
 export default Bird;

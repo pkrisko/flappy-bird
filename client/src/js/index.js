@@ -10,8 +10,7 @@ window.height = width * 1.5; // uses the width directly above.
 window.currGeneration = 1;
 window.floorHeight = 70;
 
-// Variables that heavily affect how well the birds learn. Will be changed by
-// Selenium in the future.
+// Variables that heavily affect how well the birds learn.
 window.learningRate = .1;
 window.mutationRateMultiplier = 4.2;
 window.numHiddenLayers = 11;
@@ -37,8 +36,8 @@ backgroundImg.setAttribute('src', 'img/background.png');
 const floorImg = document.createElement('IMG');
 floorImg.setAttribute('src', 'img/floor.png');
 
-function setup() {
-    // Create a population
+/** Create a population and set initial game state. Immideiately invoked IIFE */
+(function setup() {
     for (let i = 0; i < totalPopulation; i++) {
         let bird = new Bird();
         activeBirds[i] = bird;
@@ -47,12 +46,11 @@ function setup() {
     allPipes =  new AllPipes();
     window.requestAnimationFrame(mainLoop);
     addKeyVariableStats(interaction);
-}
-setup();
+})();
 
 /**
  * Heartbeat of the game. Update and draw the game 100 times a second.
- * @param {*} timestamp
+ * @param {number} timestamp
  */
 function mainLoop(timestamp) {
     if (timestamp < lastFrameTimeMs + (1000 / maxFPS)) {
@@ -65,36 +63,37 @@ function mainLoop(timestamp) {
     window.requestAnimationFrame(mainLoop);
 }
 
+/**
+ * @param {Bird} bird
+ * @param {Pipe} pipe
+ * @returns True if bird is touching any pipe in the queue.
+ */
 function touchingPipe(bird, pipe) {
     const xIsIntersecting = bird.x -7.5 + bird.imgWidth >= pipe.x && bird.x - 7.5 + bird.imgWidth <= pipe.x + pipe.pipeWidth,
         yIsIntersecting = bird.y+11 < pipe.yTop || bird.y + 23 + bird.imgHeight > pipe.yBottom;
     return xIsIntersecting && yIsIntersecting;
 }
 
+/**
+ * @param {Bird} bird
+ * @returns True if bird touching pipe or fallen past floor of the map.
+ */
 function isDead(bird) {
     const firstPipe = allPipes.pipes.head.data,
         secondPipe = allPipes.pipes.head.next.data;
-    // If bird is fallen through map, or touching a pipe.
     return (bird.y + bird.imgHeight > height - floorHeight || touchingPipe(bird, firstPipe) || touchingPipe(bird, secondPipe));
 }
 
-/**
- * Update the current state of the game
- * @param {*} progress
- */
+/** Update the current state of the game */
 function tick() {
-    if (activeBirds.length > 0)
-        currentTick = activeBirds[0].score;
     if (activeBirds.length > 0) {
         const firstBird = activeBirds[0];
+        currentTick = firstBird.score;
         if (Math.abs((firstBird.x + firstBird.imgWidth) - (allPipes.pipes.head.data.x + allPipes.pipes.head.data.pipeWidth)) < 2) {
-            score++;
-            if (score >= highScore)
+            if (++score >= highScore)
                 highScore = score;
-            if (score % 5 == 0) {
-                const numBirds = activeBirds.length;
-                console.log(`\t• ${score} Birds Alive: ${numBirds} (%${(numBirds / 5000 * 100).toFixed(2)})`)
-            }
+            if (score % 5 == 0)
+                console.log(`\t• ${score} Birds Alive: ${activeBirds.length} (%${(activeBirds.length / totalPopulation * 100).toFixed(2)})`)
         }
     } else {
         nextGeneration();
@@ -110,8 +109,9 @@ function tick() {
     allPipes.tick();
 }
 
+/** Render on top information about the current generation / game's state */
 function drawGameInfo() {
-context.font = '48px sans-serif';
+    context.font = '48px sans-serif';
     context.fillStyle = "#fff";
     context.fillText(score, width - 150, 80);
     context.font = '24px sans-serif';
@@ -120,19 +120,15 @@ context.font = '48px sans-serif';
     context.fillText(`Top: ${highScore}`, width - 150, 140);
 }
 
-/**
- * Draw the current state of the world.
- */
+/** Draw the current state of the world. */
 function render() {
     context.drawImage(backgroundImg, 0, 0, width, height);
     for (let idx = 0; idx < maxBirdsRendered && idx < activeBirds.length; idx++)
         activeBirds[idx].render();
     allPipes.render();
-    // Draw the bottom part aka floor.
-    // 16, is because every 20 pixels is length of diagonal lines in floor image. creates seamless animation.
+    // % 20, because every 20 pixels the image repeats. Creates seamless animation.
     context.drawImage(floorImg, currentTick % 20, 0, width, floorHeight, 0, height - floorHeight, width, floorHeight);
-    // Draw text with current game status.
-    drawGameInfo();
+    drawGameInfo(); // Draw text with current game status.
 }
 
 // Listen for clicks on desktop. touchstart on mobile
@@ -153,6 +149,7 @@ function resizeCanvas() {
 }
 resizeCanvas();
 
+
 // var audio = new Audio('http://files2.earmilk.com/upload/mp3/2012-04/Theophilus%20London%20Ft%20ASAP%20Rocky-Big%20Spender.mp3?_ga=2.259002762.1018058977.1556944267-758562653.1556944266');
 // setTimeout(() => {
 //     // audio.play();
@@ -160,65 +157,52 @@ resizeCanvas();
 
 // Code for creating new generations..
 
-// Start the game over
+/** Start the game over. */
 function resetGame() {
-    // Make ajax call.
-    addGenerationStats(interaction, currGeneration, score);
-    currGeneration++;
+    addGenerationStats(interaction, currGeneration++, score); // Make ajax call.
     score = 0;
     allPipes = new AllPipes();
     window.requestAnimationFrame(mainLoop);
 }
 
-// Create the next generation
+/** Create the next generation */
 export function nextGeneration() {
     resetGame();
-    // Normalize the fitness values 0-1
-    normalizeFitness(allBirds);
-    // Generate a new set of birds
-    activeBirds = generate(allBirds);
-    // Copy those birds to another array
-    allBirds = activeBirds.slice();
+    normalizeFitness(allBirds); // Normalize the fitness values 0-1
+    activeBirds = generate(allBirds); // Generate a new set of birds
+    allBirds = activeBirds.slice(); // Copy those birds to another array
 }
 
-// Generate a new population of birds
+/**
+ * Generate a new population of birds based on fitness.
+ * @param {Array} oldBirds Array of Birds from previous generation
+ * */
 function generate(oldBirds) {
-    let newBirds = [];
-    for (let i = 0; i < oldBirds.length; i++) {
-        // Select a bird based on fitness
-        let bird = poolSelection(oldBirds);
-        newBirds[i] = bird;
-    }
-    return newBirds;
+    return oldBirds.map(bird => poolSelection(oldBirds))
 }
 
-// Normalize the fitness of all birds
+/**
+ * The more ticks a bird lasts, it has exponentially (^25) higher score. Divide
+ * each birds' score by sum of all combined bird fitness scores.
+ * @param {Array} birds
+ * @returns Value between 0 and 1.
+ */
 function normalizeFitness(birds) {
-    // Good for first generations, but might need to limit this above a certain score threshold.
     birds.forEach((bird) => bird.score = Math.pow(bird.score, 25));
-    // Add up all the scores
     let sum = 0;
-    birds.forEach((bird) => sum += bird.score);
-    // Divide by the sum
-    birds.forEach((bird) => bird.fitness = bird.score / sum)
+    birds.forEach((bird) => sum += bird.score); // Add up all the scores
+    birds.forEach((bird) => bird.fitness = bird.score / sum) // Divide by the sum
 }
 
-
-// An algorithm for picking one bird from an array based on fitness
+/**
+ * Randomly select bird from list of all birds, but higher fitness scores have
+ * higher likeliness to be selected.
+ * @param {Array} birds
+ * @returns New bird which is a copy of selected bird, with mutated hidden layer.
+ */
 function poolSelection(birds) {
-    let index = 0;
-    let r = Math.random(1); // Pick a random number between 0 and 1
-    // Keep subtracting probabilities until you get less than zero
-    // Higher probabilities will be more likely to be fixed since they will
-    // subtract a larger number towards zero
-    while (r > 0) {
-        r -= birds[index].fitness;
-        // And move on to the next
-        index += 1;
-    }
-    // Go back one
-    index -= 1;
-    // Make sure it's a copy!
-    // (this includes mutation)
-    return birds[index].copy();
+    let index = 0, r = Math.random(1);
+    while (r > 0)
+        r -= birds[index++].fitness; // And move on to the next
+    return birds[index - 1].copy();
 }

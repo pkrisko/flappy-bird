@@ -4,7 +4,7 @@ Clone of flappy bird using the html5 canvas and ES6 JavaScript.
 
 View Latest Build
 --
-[Click to play!](https://pkrisko.github.io/flappy-bird/public/index.html)
+[Click to play!](https://pkrisko.github.io/flappy-bird/build/index.html)
 
 Development Setup
 --
