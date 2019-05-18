@@ -14,13 +14,10 @@ class Matrix {
         this.data = Array(this.rows).fill().map(() => Array(this.cols).fill(0));
     }
 
+    /** Return a new matrix with copied values */
     copy() {
         let m = new Matrix(this.rows, this.cols);
-        for (let i = 0; i < this.rows; i++) {
-            for (let j = 0; j < this.cols; j++) {
-                m.data[i][j] = this.data[i][j];
-            }
-        }
+        m.data = this.data.map(row => row.map(cell => cell));
         return m;
     }
 
@@ -48,11 +45,7 @@ class Matrix {
     /** @returns Flattened 2D array into linear 1D vector. */
     toArray() {
         let arr = [];
-        for (let i = 0; i < this.rows; i++) {
-            for (let j = 0; j < this.cols; j++) {
-                arr.push(this.data[i][j]);
-            }
-        }
+        this.data.forEach(row => row.map(cell => arr.push(cell)));
         return arr;
     }
 
@@ -113,16 +106,14 @@ class Matrix {
      * @returns Hadamard or scalar product.
      */
     multiply(n) {
-    if (n instanceof Matrix) {
-        if (this.rows !== n.rows || this.cols !== n.cols) {
-            console.log('Columns and Rows of A must match Columns and Rows of B.');
-            return;
-        }
-        // hadamard product
-        return this.map((e, i, j) => e * n.data[i][j]);
+        if (n instanceof Matrix) {
+            if (this.rows !== n.rows || this.cols !== n.cols) {
+                console.log('Columns and Rows of A must match Columns and Rows of B.');
+                return;
+            }
+            return this.map((e, i, j) => e * n.data[i][j]); // hadamard product
         } else {
-            // Scalar product
-            return this.map(e => e * n);
+            return this.map(e => e * n); // Scalar product
         }
     }
 
@@ -131,13 +122,7 @@ class Matrix {
      * @param {function} func
      */
     map(func) {
-        // Apply a function to every element of matrix
-        for (let i = 0; i < this.rows; i++) {
-            for (let j = 0; j < this.cols; j++) {
-                let val = this.data[i][j];
-                this.data[i][j] = func(val, i, j);
-            }
-        }
+        this.data = this.data.map((row, i) => row.map((cell, j) => func(cell, i, j)));
         return this;
     }
 
