@@ -14,10 +14,13 @@ class Matrix {
         this.data = Array(this.rows).fill().map(() => Array(this.cols).fill(0));
     }
 
-    /** @returns a copy of this matrix. */
     copy() {
         let m = new Matrix(this.rows, this.cols);
-        m.data = m.data.map(row => row.map(cell => cell));
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                m.data[i][j] = this.data[i][j];
+            }
+        }
         return m;
     }
 
@@ -42,12 +45,14 @@ class Matrix {
         return new Matrix(a.rows, a.cols).map((_, i, j) => a.data[i][j] - b.data[i][j]);
     }
 
-    /**
-     * @returns Flattened 2D array into linear 1D vector.
-     */
+    /** @returns Flattened 2D array into linear 1D vector. */
     toArray() {
         let arr = [];
-        this.data.forEach(row => row.forEach(cell => arr.push(cell)));
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                arr.push(this.data[i][j]);
+            }
+        }
         return arr;
     }
 
@@ -108,14 +113,16 @@ class Matrix {
      * @returns Hadamard or scalar product.
      */
     multiply(n) {
-        if (n instanceof Matrix) {
-            if (this.rows !== n.rows || this.cols !== n.cols) {
-                console.log('Columns and Rows of A must match Columns and Rows of B.');
-                return;
-            }
-            return this.map((e, i, j) => e * n.data[i][j]); // hadamard product
+    if (n instanceof Matrix) {
+        if (this.rows !== n.rows || this.cols !== n.cols) {
+            console.log('Columns and Rows of A must match Columns and Rows of B.');
+            return;
+        }
+        // hadamard product
+        return this.map((e, i, j) => e * n.data[i][j]);
         } else {
-            return this.map(e => e * n); // Scalar product
+            // Scalar product
+            return this.map(e => e * n);
         }
     }
 
@@ -124,7 +131,13 @@ class Matrix {
      * @param {function} func
      */
     map(func) {
-        this.data = this.data.map((row, i) => row.map((cell, j) => func(cell, i, j)))
+        // Apply a function to every element of matrix
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                let val = this.data[i][j];
+                this.data[i][j] = func(val, i, j);
+            }
+        }
         return this;
     }
 
@@ -154,8 +167,9 @@ class Matrix {
      * @param {String} data
      */
     static deserialize(data) {
-        if (typeof data == 'string')
+        if (typeof data == 'string') {
             data = JSON.parse(data);
+        }
         let matrix = new Matrix(data.rows, data.cols);
         matrix.data = data.data;
         return matrix;
