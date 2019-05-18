@@ -45,7 +45,7 @@ class Matrix {
     /** @returns Flattened 2D array into linear 1D vector. */
     toArray() {
         let arr = [];
-        this.data.forEach(row => row.map(cell => arr.push(cell)));
+        this.data.forEach(row => row.forEach(cell => arr.push(cell)));
         return arr;
     }
 

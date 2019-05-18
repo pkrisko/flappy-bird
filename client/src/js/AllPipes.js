@@ -7,9 +7,8 @@ const distanceBetweenPipes = 220;
 class AllPipes {
     constructor() {
         this.pipes = new Queue();
-        for (let idx = 1.5; idx < 10; idx++) {
-            this.pipes.enqueue(new Pipe((idx + .5) * distanceBetweenPipes));
-        }
+        for (let idx = 0; idx < 3; idx++)
+            this.pipes.enqueue(new Pipe((idx + 2) * distanceBetweenPipes));
     }
 
     /** If pipe is off screen, remove and add a new one to tail. */
