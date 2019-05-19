@@ -1,17 +1,12 @@
-const Http = new XMLHttpRequest();
-const addGenerationStatsUrl='https://us-central1-flappy-server.cloudfunctions.net/add-generation-stats';
-const addKeyVariableStatsUrl='https://us-central1-flappy-server.cloudfunctions.net/add-key-variable-stats';
+const Http = new XMLHttpRequest(),
+    baseURL = 'https://us-central1-flappy-server.cloudfunctions.net/',
+    addGenerationStatsUrl=`${baseURL}add-generation-stats`,
+    addKeyVariableStatsUrl=`${baseURL}add-key-variable-stats`;
 
-Http.onreadystatechange=(e)=>{
-    console.log(Http.responseText)
-}
+Http.onreadystatechange= () => console.log(Http.responseText);
 
-export function addGenerationStats(interaction, currGeneration, score) {
-    const postData = {
-        "interaction": interaction,
-        "epochNumber": currGeneration,
-        "epochScore": score
-    }
+export function addGenerationStats(interaction, epochNumber, epochScore) {
+    const postData = { interaction, epochNumber, epochScore };
     Http.open("POST", addGenerationStatsUrl);
     Http.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     Http.send(JSON.stringify(postData));

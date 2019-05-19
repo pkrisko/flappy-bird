@@ -1,3 +1,4 @@
+/** For storing data, in this case a pipe. */
 class Node {
     constructor(data, prev, next) {
         this.data = data;
@@ -6,6 +7,7 @@ class Node {
     }
 }
 
+/** Doubly linked list which adds to the tail and removes from the head. */
 class Queue {
     constructor() {
         this.head;
@@ -30,9 +32,7 @@ class Queue {
         }
     }
 
-    /**
-     * Remove from the front
-     */
+    /** Remove from the front */
     dequeue() {
         if (!this.head) return; // empty
         this.size--;
