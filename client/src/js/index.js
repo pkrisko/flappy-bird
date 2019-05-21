@@ -62,7 +62,7 @@ floorImg.setAttribute('src', 'img/floor.png');
 function setup() {
     if (score >= maxScoreAllowed)
         addGenerationStats(interaction, currGeneration, score); // Make ajax call.
-    const variableSetsIdx = Math.floor(interactionsCount / 25);
+    const variableSetsIdx = Math.floor(interactionsCount / 15);
     if (variableSetsIdx >= variableSets.length)
         throw new Error("Your watch has ended");
     // Set key variables of interest
