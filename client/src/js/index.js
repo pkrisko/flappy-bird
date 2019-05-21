@@ -23,21 +23,34 @@ window.floorHeight = 70;
 window.learningRate = .1;
 window.mutationRateMultiplier = 4.2;
 window.numHiddenLayers = 11;
+const variableSets = [
+    [.1, 4.2, 11], // base
+    [.25, 4.2, 11], // learning rate
+    [.35, 4.2, 11], // learning rate
+    [.5, 4.2, 11], // learning rate
+    [.1, 3.7, 11], // Mutation rate mult
+    [.1, 5, 11], // mutation rate mult
+    [.1, 4.2, 6], // Hidden layers
+    [.1, 4.2, 8], // Hidden layers
+    [.1, 4.2, 12] // Hidden layers
+]
 
 // File scoped constants
 const maxFPS = 100; // set to 10 and watch what happens
 const maxBirdsRendered = 20;
-const interaction = (+new Date).toString();
+const maxScoreAllowed = 200;
 
 // File scoped variables
 let allPipes;
-let currentTick = 0;
-let score = 0;
-let highScore = 0;
-let lastFrameTimeMs = 0;
+let currentTick;
+let score;
+let highScore;
+let lastFrameTimeMs;
 let totalPopulation = 4000; // Total birds in each generation
-let activeBirds = []; // All active birds (not yet collided with pipe)
-let allBirds = []; // All birds for any given population
+let activeBirds; // All active birds (not yet collided with pipe)
+let allBirds; // All birds for any given population
+let interaction;
+let interactionsCount = 0;
 
 // File scoped images
 const backgroundImg = document.createElement('IMG');
@@ -46,7 +59,26 @@ const floorImg = document.createElement('IMG');
 floorImg.setAttribute('src', 'img/floor.png');
 
 /** Create a population and set initial game state. Immideiately invoked IIFE */
-(function setup() {
+function setup() {
+    if (score >= maxScoreAllowed)
+        addGenerationStats(interaction, currGeneration, score); // Make ajax call.
+    const variableSetsIdx = Math.floor(interactionsCount / 1);
+    if (variableSetsIdx >= variableSets.length)
+        throw new Error("Your watch has ended");
+    // Set key variables of interest
+    window.learningRate = variableSets[variableSetsIdx][0];
+    window.mutationRateMultiplier = variableSets[variableSetsIdx][1];
+    window.numHiddenLayers = variableSets[variableSetsIdx][2];
+    // Reset variables for this interaction
+    score = 0;
+    highScore = 0;
+    currentTick = 0;
+    lastFrameTimeMs = 0;
+    activeBirds = [];
+    allBirds = [];
+    currGeneration = 1;
+    interaction = (+new Date).toString(16).toUpperCase();
+    interactionsCount++;
     for (let i = 0; i < totalPopulation; i++) {
         let bird = new Bird();
         activeBirds[i] = bird;
@@ -55,7 +87,8 @@ floorImg.setAttribute('src', 'img/floor.png');
     allPipes =  new AllPipes();
     window.requestAnimationFrame(mainLoop);
     addKeyVariableStats(interaction);
-})();
+}
+setup();
 
 /**
  * Heartbeat of the game. Update and draw the game 100 times a second.
@@ -68,7 +101,7 @@ function mainLoop(timestamp) {
     }
     lastFrameTimeMs = timestamp;
     tick(); // update game state FIRST
-    render();
+    // render(); for now, don't render
     window.requestAnimationFrame(mainLoop);
 }
 
@@ -95,7 +128,7 @@ function isDead(bird) {
 
 /** Update the current state of the game */
 function tick() {
-    if (activeBirds.length > 0) {
+    if (activeBirds.length > 0 && score < maxScoreAllowed) {
         const firstBird = activeBirds[0];
         currentTick = firstBird.score;
         if (Math.abs((firstBird.x + firstBird.imgWidth) - (allPipes.pipes.head.data.x + allPipes.pipes.head.data.pipeWidth)) < 2) {
@@ -105,7 +138,8 @@ function tick() {
                 console.log(`\t• ${score} Birds Alive: ${activeBirds.length} (%${(activeBirds.length / totalPopulation * 100).toFixed(2)})`)
         }
     } else {
-        nextGeneration();
+        nextGeneration(score >= maxScoreAllowed);
+        return;
     }
     for (let i = activeBirds.length - 1; i >= 0; i--) {
         let bird = activeBirds[i];
@@ -175,7 +209,11 @@ function resetGame() {
 }
 
 /** Create the next generation */
-export function nextGeneration() {
+export function nextGeneration(maxScoreReached) {
+    if (currGeneration >= 30 || maxScoreReached) {
+        setup();
+        return;
+    }
     resetGame();
     normalizeFitness(allBirds); // Normalize the fitness values 0-1
     activeBirds = generate(allBirds); // Generate a new set of birds
