@@ -7,14 +7,14 @@ Http.onreadystatechange= () => console.log(Http.responseText);
 
 export function addGenerationStats(interaction, epochNumber, epochScore) {
     const postData = { interaction, epochNumber, epochScore };
-    Http.open("POST", addGenerationStatsUrl);
+    Http.open("POST", addGenerationStatsUrl, false); // force synchronous
     Http.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     Http.send(JSON.stringify(postData));
 }
 
 export function addKeyVariableStats(interaction) {
     const postData = { interaction, learningRate, mutationRateMultiplier, numHiddenLayers };
-    Http.open("POST", addKeyVariableStatsUrl);
+    Http.open("POST", addKeyVariableStatsUrl, false); // force synchronous
     Http.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     Http.send(JSON.stringify(postData));
 }
