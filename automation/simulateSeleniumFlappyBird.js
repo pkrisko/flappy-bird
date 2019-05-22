@@ -1,7 +1,10 @@
 const webdriver = require('selenium-webdriver');
+const chrome = require('selenium-webdriver/chrome');
 
 for (let idx = 0; idx < 4; idx++) {
-    const chromeDriver = new webdriver.Builder().forBrowser('chrome').build();
+    const chromeDriver = new webdriver.Builder().forBrowser('chrome')
+        .setChromeOptions(new chrome.Options().addArguments('--headless'))
+        .build();
     navigateToBuiltURL(chromeDriver);
 }
 
